@@ -10,7 +10,9 @@ function AND(x1, x2)
     end
 end
 
-for xs = [(0, 0), (1, 0), (0, 1), (1, 1)]
-    y = AND(xs[1], xs[2])
-    println("$xs -> $y")
+if abspath(PROGRAM_FILE) == @__FILE__
+    for xs = [(0, 0), (1, 0), (0, 1), (1, 1)]
+        y = AND(xs[1], xs[2])
+        println("$xs -> $y")
+    end
 end
