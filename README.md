@@ -33,7 +33,7 @@
 　1.3.11 [for文](./md/ch01.md#1311-for文)  
 　1.3.12 [関数](./md/ch01.md#1312-関数)  
 1.4 [Juliaスクリプトファイル](./md/ch01.md#14-juliaスクリプトファイル)  
-1.5 [Plot](./md/ch01.md#15-plots)  
+1.5 [Plots](./md/ch01.md#15-plots)  
 　1.5.1 [Plotsのインポート](./md/ch01.md#151-plotsのインポート)  
 　1.5.2 [単純なグラフ描画](./md/ch01.md#152-単純なグラフ描画)  
 　1.5.3 [Plotsの機能](./md/ch01.md#153-plotsの機能)  
