@@ -21,7 +21,7 @@ img_size = 784
 function _change_one_hot_label(X)
     T = zeros(Float32, size(X, 1), 10)
     for (idx, row) in enumerate(X)
-        T[idx, row+1] = 1
+        T[idx, row] = 1
     end
 
     return T

@@ -14,7 +14,6 @@ save_file = joinpath(dataset_dir, "mnist.h5")
 
 train_num = 60000
 test_num = 10000
-img_dim = (1, 28, 28)
 img_size = 784
 
 
@@ -47,7 +46,7 @@ function _load_label(file_name)
     print("$(size(labels)) ")
     println("Done")
 
-    return labels[9:end]
+    return labels[9:end] .+ 1
 end
 
 function _load_img(file_name)
