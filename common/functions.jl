@@ -25,9 +25,14 @@ function relu_grad(x::T) where T <: Array{Y} where Y <:Real
     return grad
 end
 
-function softmax(a)
+function softmax(a::Array{T,2}) where T <:Real
     a = exp.(a .- maximum(a, dims=2)) # オーバーフロー対策
     return a ./ sum(a, dims=2)
+end
+
+function softmax(a)
+    a = exp.(a .- maximum(a)) # オーバーフロー対策
+    return a ./ sum(a)
 end
 
 function sum_squared_error(y, t)

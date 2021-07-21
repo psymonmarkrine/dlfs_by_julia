@@ -10,7 +10,7 @@ end
 
 function init_network()
     network = Dict()
-    for (k, v) in key_file
+    for k in ("W1", "W2", "W3", "b1", "b2", "b3")
         network[k] = HDF5.h5read("sample_weight.h5", k)
     end
     return network
@@ -20,11 +20,11 @@ function predict(network, x)
     W1, W2, W3 = network["W1"], network["W2"], network["W3"]
     b1, b2, b3 = network["b1"], network["b2"], network["b3"]
 
-    a1 = x * W1 + b1
+    a1 = x * W1 .+ b1
     z1 = sigmoid.(a1)
-    a2 = z1 * W2 + b2
+    a2 = z1 * W2 .+ b2
     z2 = sigmoid.(a2)
-    a3 = z2 * W3 + b3
+    a3 = z2 * W3 .+ b3
     y = softmax(a3)
 
     return y
@@ -35,8 +35,8 @@ network = init_network()
 accuracy_cnt = 0
 for i in 1:size(x, 1)
     y = predict(network, reshape(x[i,:], 1, :))
-    p = argmax(y) # 最も確率の高い要素のインデックスを取得
-    if typeof(t)(p) == t[i]
+    p = argmax(y[:]) # 最も確率の高い要素のインデックスを取得
+    if (p) == typeof(p)(t[i])
         accuracy_cnt += 1
     end
 end
