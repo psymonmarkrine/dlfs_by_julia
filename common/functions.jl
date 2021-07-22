@@ -1,4 +1,3 @@
-using Base: Real
 function identity_function(x)
     return x
 end
