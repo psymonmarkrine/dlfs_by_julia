@@ -1,4 +1,3 @@
-# cf.http://d.hatena.ne.jp/white_wheels/20100327/p3
 using Plots
 
 

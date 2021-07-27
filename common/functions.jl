@@ -10,7 +10,7 @@ function sigmoid(x)
     return 1 / (1 + exp(-x))
 end
 
-function sigmoid_grad(x::T) where T <: Array{Y} where Y <:Real
+function sigmoid_grad(x::Array{T}) where T <:Real
     return (1 .- sigmoid.(x)) .* sigmoid.(x)
 end    
 
@@ -40,7 +40,7 @@ end
 
 function cross_entropy_error(y::Vector{T}, t::Vector{T}) where T <: Real
     delta = 1.e-7
-    return -t .* log.(y .+ delta)
+    return -t' * log.(y .+ delta)
 end
 
 function cross_entropy_error(y::Matrix{T}, t::Matrix{T}) where T <: Real
