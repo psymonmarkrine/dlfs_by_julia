@@ -1,3 +1,5 @@
+<meta name="google-site-verification" content="d60EPWtnj4jlMaYSYxzHqwfX-1Iq3S4aYhmaqdwU79k" />
+
 # ゼロから作るDeep LearningをJuliaで学びたかった
 
 自分用まとめ  
@@ -108,7 +110,7 @@
 　[4.4.1 勾配法](./md/ch04.md#441-勾配法)  
 　[4.4.2 ニューラルネットワークに対する勾配](./md/ch04.md#442-ニューラルネットワークに対する勾配)  
 4.5 学習アルゴリズムの実装  
-
+　[4.5.1 2層ニューラルネットワークの構造体](./md/ch04.md#451-2層ニューラルネットワークの構造体)  
 
 ### 5章 誤差逆伝搬法
 

@@ -38,22 +38,22 @@ function sum_squared_error(y, t)
     return 0.5 * sum((y-t).^2)
 end
 
-function cross_entropy_error(y::Vector{T}, t::Vector{T}) where T <: Real
+function cross_entropy_error(y::Vector{T}, t::Vector{Y}) where {T <: Real, Y <:Real}
     delta = 1.e-7
     return -t' * log.(y .+ delta)
 end
 
-function cross_entropy_error(y::Matrix{T}, t::Matrix{T}) where T <: Real
+function cross_entropy_error(y::Matrix{T}, t::Matrix{Y}) where {T <: Real, Y <:Real}
     batch_size = size(y, 1)
     return sum(cross_entropy_error.([y[i,:] for i=1:batch_size], [t[i,:] for i=1:batch_size])) / batch_size
 end
 
-function cross_entropy_error(y::Vector{T}, t::Y) where T <: Real where Y <: Integer
+function cross_entropy_error(y::Vector{T}, t::Y) where {T <: Real, Y <: Integer}
     delta = 1.e-7
     return -log.(y[t] .+ delta)
 end
 
-function cross_entropy_error(y::Matrix{T}, t::Vector{Y}) where T <: Real where Y <: Integer
+function cross_entropy_error(y::Matrix{T}, t::Vector{Y}) where {T <: Real, Y <: Integer}
     batch_size = size(y, 1)
     return sum(cross_entropy_error.([y[i,:] for i=1:batch_size], [t[i] for i=1:batch_size])) / batch_size
 end
