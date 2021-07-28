@@ -1,4 +1,5 @@
 theme: jekyll-theme-time-machine
+google_analytics: UA-203447057-1
 plugins:
  - jekyll-sitemap
  
