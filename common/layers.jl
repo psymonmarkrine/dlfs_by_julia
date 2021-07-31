@@ -10,13 +10,13 @@ Relu() = Relu(nothing)
 function forward(self::Relu, x)
         self.mask = (x .<= 0)
         out = x
-        out[self.mask] = 0
+        out[self.mask] .= 0
 
         return out
 end
 
 function backward(self::Relu, dout)
-        dout[self.mask] = 0
+        dout[self.mask] .= 0
         dx = dout
 
         return dx
@@ -46,7 +46,7 @@ mutable struct Affine
     W
     b
     x
-    oroginal_x_shape
+    original_x_shape
     dW
     db
 end
@@ -68,7 +68,7 @@ end
 function backward(self::Affine, dout)
     dx = dout * self.W'
     self.dW = self.x' * dout
-    self.db = np.sum(dout, dims=1)
+    self.db = sum(dout, dims=1)
     
     dx = reshape(dx, self.original_x_shape)  # 入力データの形状に戻す（テンソル対応）
     return dx
@@ -296,3 +296,4 @@ class Pooling:
         dx = col2im(dcol, self.x.shape, self.pool_h, self.pool_w, self.stride, self.pad)
         
         return dx
+=#

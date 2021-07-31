@@ -9,20 +9,20 @@ struct TwoLayerNet
     lastLayer
 end
 
-function TwoLayerNet(input_size, hidden_size, output_size, weight_init_std = 0.01)
+function TwoLayerNet(input_size::Integer, hidden_size::Integer, output_size::Integer, weight_init_std = 0.01)
     # 重みの初期化
     params = Dict(
         "W1" => weight_init_std * randn(input_size, hidden_size),
         "b1" => zeros(1, hidden_size),
-        "W2" => weight_init_std * randn(hidden_size, output_size) ,
+        "W2" => weight_init_std * randn(hidden_size, output_size),
         "b2" => zeros(1, output_size)
     )
    
     # レイヤの生成
     layers = Dict(
-        "Affine1" => Affine(params["W1"], self.params["b1"]),
+        "Affine1" => Affine(params["W1"], params["b1"]),
         "Relu1" => Relu(),
-        "Affine2" => Affine(params["W2"], self.params["b2"])
+        "Affine2" => Affine(params["W2"], params["b2"])
     )
 
     lastLayer = SoftmaxWithLoss()
@@ -44,15 +44,15 @@ function loss(self::TwoLayerNet, x, t)
 end
 
 function accuracy(self::TwoLayerNet, x, t::Vector{T}) where T <: Integer
-    y = self.predict(x)
+    y = predict(self, x)
     y = [i[2] for i=argmax(y, dims=2)]
     
-    accuracy = sum(y == eltype(y).(t)) / size(x, 1)
+    accuracy = sum(y .== eltype(y).(t)) / size(x, 1)
     return accuracy
 end
 
 function accuracy(self::TwoLayerNet, x, t)
-    y = self.predict(x)
+    y = predict(self, x)
     y = argmax(y, dims=2)
     t = argmax(t, dims=2)
     

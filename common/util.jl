@@ -6,7 +6,7 @@ function smooth_curve(x)
     """
     window_len = 11
     w = 0.6 .- 0.4cos.(2π .* (0:window_len-1)./(window_len-1))
-    w /= sum(w)
+    w ./= sum(w)
     y = [w' * x[i:(i+window_len-1)] for i=1:(size(x,1)-window_len+1)]
     
     return y
@@ -108,7 +108,7 @@ function col2im(col, input_shape, filter_h::Integer, filter_w::Integer, stride::
         y_max = y + stride*out_h
         for x = 1:filter_w
             x_max = x + stride*out_w
-            img[:, :, y:y_max:stride, x:x_max:stride] += col[:, :, y, x, :, :]
+            img[:, :, y:y_max:stride, x:x_max:stride] .+= col[:, :, y, x, :, :]
         end
     end
 
