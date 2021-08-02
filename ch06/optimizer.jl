@@ -6,7 +6,7 @@ SGD() = SGD(0.01)
 
 function update(self::SGD, params, grads)
     for (key,_) = params
-        params[key] .-= self.lr * grads[key]
+        params[key] -= self.lr * grads[key]
     end
 end
 
@@ -22,7 +22,7 @@ function update(self::Momentum, params, grads)
     for (key, val) = params
         get!(self.v, key, zero(val))
         self.v[key] = self.momentum .* self.v[key] .- self.lr * grads[key] 
-        params[key] .+= self.v[key]
+        params[key] += self.v[key]
     end
 end
 
@@ -38,10 +38,10 @@ Nesterov(lr=0.01, momentum=0.9) = Nesterov(lr, momoentum, IdDict())
 function update(self::Nesterov, params, grads)
     for (key, val) = params
         get!(self.v, key, zero(val))
-        params[key] .+= self.momentum * self.momentum * self.v[key]
-        params[key] .-= (1 + self.momentum) * self.lr * grads[key]
-        self.v[key] .*= self.momentum
-        self.v[key] .-= self.lr * grads[key]
+        params[key] += self.momentum * self.momentum * self.v[key]
+        params[key] -= (1 + self.momentum) * self.lr * grads[key]
+        self.v[key] *= self.momentum
+        self.v[key] -= self.lr * grads[key]
     end
 end
 
@@ -55,8 +55,8 @@ AdaGrad(lr=0.01) = AdaGrad(lr, IdDict())
 function update(self::AdaGrad, params, grads)
     for (key,val) = params
         get!(self.h, key, zero(val))
-        self.h[key] .+= grads[key].^2
-        params[key] .-= self.lr * grads[key] ./ (sqrt.(self.h[key]) + 1e-7)
+        self.h[key] += grads[key].^2
+        params[key] -= self.lr * grads[key] ./ (sqrt.(self.h[key]) + 1e-7)
     end
 end
 
@@ -72,9 +72,9 @@ RMSprop(lr=0.01, decay_rate = 0.99) = RMSprop(lr, decay_rate, IdDict())
 function update(self::RMSprop, params, grads)
     for (key,val) = params
         get!(self.h, key, zero(val))
-        self.h[key] .*= self.decay_rate
-        self.h[key] .+= (1 - self.decay_rate) * grads[key].^2
-        params[key] .-= self.lr * grads[key] ./ (sqrt.(self.h[key]) + 1e-7)
+        self.h[key] *= self.decay_rate
+        self.h[key] += (1 - self.decay_rate) * grads[key].^2
+        params[key] -= self.lr * grads[key] ./ (sqrt.(self.h[key]) + 1e-7)
     end
 end
 
@@ -97,10 +97,10 @@ function update(self::Adam, params, grads)
         get!(self.m, key, zero(val))
         get!(self.v, key, zero(val))
 
-        self.m[key] .+= (1 - self.beta1) * (grads[key] - self.m[key])
-        self.v[key] .+= (1 - self.beta2) * (grads[key].^2 - self.v[key])
-        
-        params[key] .-= lr_t * self.m[key] ./ (sqrt.(self.v[key]) + 1e-7)
+        self.m[key] += (1 - self.beta1) * (grads[key] - self.m[key])
+        self.v[key] += (1 - self.beta2) * (grads[key].^2 - self.v[key])
+
+        params[key] -= lr_t * self.m[key] ./ (sqrt.(self.v[key]) + 1e-7)
         
         #unbias_m .+= (1 - self.beta1) * (grads[key] - self.m[key]) # correct bias
         #unbisa_b .+= (1 - self.beta2) * (grads[key] .* grads[key] - self.v[key]) # correct bias
