@@ -51,7 +51,7 @@ mutable struct AdaGrad # """AdaGrad"""
     h::IdDict
 end
 AdaGrad(lr=0.01) = AdaGrad(lr, IdDict())
-        
+
 function update(self::AdaGrad, params, grads)
     for (key,val) = params
         get!(self.h, key, zero(val))

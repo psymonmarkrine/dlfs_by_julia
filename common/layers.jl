@@ -98,7 +98,7 @@ function backward(self::SoftmaxWithLoss, dout=1)
     else
         dx = copy(self.y)
         for (i,j) = enumerate(self.t)
-            dx[i, j] .-= 1
+            dx[i, j] -= 1
         end
         dx = dx ./ batch_size
     end

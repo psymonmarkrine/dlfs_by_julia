@@ -1,3 +1,4 @@
+using OrderedCollections
 using Plots
 include("optimizer.jl")
 
@@ -22,7 +23,7 @@ grads = Dict(
 )
 
 
-optimizers = Dict(
+optimizers = OrderedDict(
     "SGD" => SGD(0.95),
     "Momentum" => Momentum(0.1),
     "AdaGrad" => AdaGrad(1.5),
@@ -60,7 +61,7 @@ for (key, val) = optimizers
     # subplot(2, 2, idx)
     # idx += 1
     plot(0, 0, marker=:+, xlabel="x", ylabel="y", xlim=(-10,10), ylim=(-10,10), leg=false)
-    contour!(x, y, Z)
+    contour!(x, y, Z, cbar=false)
     push!(p, plot!(x_history, y_history, title=key, marker=:c, color=:red, leg=false))
     # colorbar()
     # spring()

@@ -34,7 +34,7 @@ mutable struct Nesterov # """Nesterov's Accelerated Gradient (http://arxiv.org/a
 end
 
 Nesterov(lr=0.01, momentum=0.9) = Nesterov(lr, momoentum, IdDict())
-    
+
 function update(self::Nesterov, params, grads)
     for (key, val) = params
         get!(self.v, key, zero(val))
@@ -51,12 +51,12 @@ mutable struct AdaGrad # """AdaGrad"""
     h::IdDict
 end
 AdaGrad(lr=0.01) = AdaGrad(lr, IdDict())
-        
+
 function update(self::AdaGrad, params, grads)
     for (key,val) = params
         get!(self.h, key, zero(val))
         self.h[key] .+= grads[key].^2
-        params[key] .-= self.lr * grads[key] ./ (sqrt.(self.h[key]) + 1e-7)
+        params[key] .-= self.lr * grads[key] ./ (sqrt.(self.h[key]) .+ 1e-7)
     end
 end
 
@@ -74,7 +74,7 @@ function update(self::RMSprop, params, grads)
         get!(self.h, key, zero(val))
         self.h[key] .*= self.decay_rate
         self.h[key] .+= (1 - self.decay_rate) * grads[key].^2
-        params[key] .-= self.lr * grads[key] ./ (sqrt.(self.h[key]) + 1e-7)
+        params[key] .-= self.lr * grads[key] ./ (sqrt.(self.h[key]) .+ 1e-7)
     end
 end
 
@@ -100,7 +100,7 @@ function update(self::Adam, params, grads)
         self.m[key] .+= (1 - self.beta1) * (grads[key] - self.m[key])
         self.v[key] .+= (1 - self.beta2) * (grads[key].^2 - self.v[key])
         
-        params[key] .-= lr_t * self.m[key] ./ (sqrt.(self.v[key]) + 1e-7)
+        params[key] .-= lr_t * self.m[key] ./ (sqrt.(self.v[key]) .+ 1e-7)
         
         #unbias_m .+= (1 - self.beta1) * (grads[key] - self.m[key]) # correct bias
         #unbisa_b .+= (1 - self.beta2) * (grads[key] .* grads[key] - self.v[key]) # correct bias

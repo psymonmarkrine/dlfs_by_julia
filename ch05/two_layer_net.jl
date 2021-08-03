@@ -1,3 +1,5 @@
+import OrderedCollections: OrderedDict
+
 include("../common/layers.jl")
 include("../common/gradient.jl") # numerical_gradient
 # from collections import OrderedDict
@@ -5,7 +7,7 @@ include("../common/gradient.jl") # numerical_gradient
 
 struct TwoLayerNet
     params::Dict
-    layers::Dict
+    layers::OrderedDict
     lastLayer
 end
 
@@ -19,7 +21,7 @@ function TwoLayerNet(input_size::Integer, hidden_size::Integer, output_size::Int
     )
    
     # レイヤの生成
-    layers = Dict(
+    layers = OrderedDict(
         "Affine1" => Affine(params["W1"], params["b1"]),
         "Relu1" => Relu(),
         "Affine2" => Affine(params["W2"], params["b2"])
