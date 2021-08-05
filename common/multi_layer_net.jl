@@ -14,7 +14,7 @@ mutable struct MultiLayerNet
     layers::OrderedDict
     last_layer
 end
-function MultiLayerNet(input_size::Integer, hidden_size_list::Vector{T}, output_size::Integer,
+function MultiLayerNet(input_size::Integer, hidden_size_list::Vector{T}, output_size::Integer;
     activation="relu", weight_init_std="relu", weight_decay_lambda::AbstractFloat=0.0) where T <: Integer
     """全結合による多層ニューラルネットワーク
     Parameters
@@ -50,7 +50,7 @@ function MultiLayerNet(input_size::Integer, hidden_size_list::Vector{T}, output_
     return self
 end
 
-function __init_weight!(self::MultiLayerNet, weight_init_std::String)
+function __init_weight!(self::MultiLayerNet, weight_init_std)
     """重みの初期値設定
     Parameters
     ----------
@@ -60,10 +60,10 @@ function __init_weight!(self::MultiLayerNet, weight_init_std::String)
     """
     all_size_list = vcat(self.input_size, self.hidden_size_list, self.output_size)
     for idx = 1:length(all_size_list)-1
-        scale = 0.01
-        if lowercase(weight_init_std) in ("relu", "he")
+        scale = weight_init_std
+        if lowercase("$weight_init_std") in ("relu", "he")
             scale = sqrt(2.0 / all_size_list[idx])  # ReLUを使う場合に推奨される初期値
-        elseif lowercase(weight_init_std) in ("sigmoid", "xavier")
+        elseif lowercase("$weight_init_std") in ("sigmoid", "xavier")
             scale = sqrt(1.0 / all_size_list[idx])  # sigmoidを使う場合に推奨される初期値
         end
 
