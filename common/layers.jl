@@ -1,3 +1,5 @@
+import Statistics: mean
+
 include("functions.jl")
 include("util.jl") # im2col, col2im
 
@@ -105,110 +107,125 @@ function backward(self::SoftmaxWithLoss, dout=1)
     return dx
 end
 
-#=
-class Dropout:
+
+mutable struct Dropout
+    dropout_ratio::AbstractFloat
+    mask
+end
+
+function Dropout(dropout_ratio=0.5)
     """
     http://arxiv.org/abs/1207.0580
     """
-    def __init__(self, dropout_ratio=0.5):
-        self.dropout_ratio = dropout_ratio
-        self.mask = None
+    return Dropout(dropout_ratio, nothing)
+end
 
-    def forward(self, x, train_flg=True):
-        if train_flg:
-            self.mask = np.random.rand(*x.shape) > self.dropout_ratio
-            return x * self.mask
-        else:
-            return x * (1.0 - self.dropout_ratio)
+function forward(self::Dropout, x, train_flg=true)
+    if train_flg
+        self.mask = rand(eltype(x), size(x)) .> self.dropout_ratio
+        return x .* self.mask
+    else
+        return x * (1.0 - self.dropout_ratio)
+    end
+end
 
-    def backward(self, dout):
-        return dout * self.mask
+function backward(self::Dropout, dout)
+    return dout * self.mask
+end
 
 
-class BatchNormalization:
+mutable struct BatchNormalization
+    gamma
+    beta
+    momentum
+    input_shape  # Conv層の場合は4次元、全結合層の場合は2次元
+    # テスト時に使用する平均と分散
+    running_mean
+    running_var
+    # backward時に使用する中間データ
+    batch_size
+    xc
+    xn
+    std
+    dgamma
+    dbeta
+end
+
+function BatchNormalization(gamma, beta; momentum=0.9, running_mean=nothing, running_var=nothing)
     """
     http://arxiv.org/abs/1502.03167
     """
-    def __init__(self, gamma, beta, momentum=0.9, running_mean=None, running_var=None):
-        self.gamma = gamma
-        self.beta = beta
-        self.momentum = momentum
-        self.input_shape = None # Conv層の場合は4次元、全結合層の場合は2次元  
+    return BatchNormalization(gamma, beta, momentum, nothing, running_mean, running_var, nothing, nothing, nothing, nothing, nothing, nothing)
+end
 
-        # テスト時に使用する平均と分散
-        self.running_mean = running_mean
-        self.running_var = running_var  
+function forward(self::BatchNormalization, x, train_flg=true)
+    self.input_shape = size(x)
+    if ndims(x) != 2
+        N, C, H, W = size(x)
+        x = reshape(x, N, :)
+    end
+
+    out = __forward(self, x, train_flg)
+    
+    return reshape(out, self.input_shape)
+end
         
-        # backward時に使用する中間データ
-        self.batch_size = None
-        self.xc = None
-        self.std = None
-        self.dgamma = None
-        self.dbeta = None
-
-    def forward(self, x, train_flg=True):
-        self.input_shape = x.shape
-        if x.ndim != 2:
-            N, C, H, W = x.shape
-            x = x.reshape(N, -1)
-
-        out = self.__forward(x, train_flg)
+function __forward(self::BatchNormalization, x, train_flg)
+    if isnothing(self.running_mean)
+        N, D = size(x)
+        self.running_mean = zeros(1, D)
+        self.running_var = zeros(1, D)
+    end
+    if train_flg
+        mu = mean(x, dims=1)
+        xc = x .- mu
+        var = mean(xc.^2, dims=1)
+        std = sqrt.(var .+ 10e-7)
+        xn = xc ./ std
         
-        return out.reshape(*self.input_shape)
-            
-    def __forward(self, x, train_flg):
-        if self.running_mean is None:
-            N, D = x.shape
-            self.running_mean = np.zeros(D)
-            self.running_var = np.zeros(D)
-                        
-        if train_flg:
-            mu = x.mean(axis=0)
-            xc = x - mu
-            var = np.mean(xc**2, axis=0)
-            std = np.sqrt(var + 10e-7)
-            xn = xc / std
-            
-            self.batch_size = x.shape[0]
-            self.xc = xc
-            self.xn = xn
-            self.std = std
-            self.running_mean = self.momentum * self.running_mean + (1-self.momentum) * mu
-            self.running_var = self.momentum * self.running_var + (1-self.momentum) * var            
-        else:
-            xc = x - self.running_mean
-            xn = xc / ((np.sqrt(self.running_var + 10e-7)))
-            
-        out = self.gamma * xn + self.beta 
-        return out
+        self.batch_size = size(x, 1)
+        self.xc = xc
+        self.xn = xn
+        self.std = std
+        self.running_mean = self.momentum * self.running_mean + (1-self.momentum) * mu
+        self.running_var = self.momentum * self.running_var + (1-self.momentum) * var            
+    else
+        xc = x .- self.running_mean
+        xn = xc ./ sqrt(self.running_var .+ 10e-7)
+    end
+    out = self.gamma .* xn .+ self.beta 
+    return out
+end
 
-    def backward(self, dout):
-        if dout.ndim != 2:
-            N, C, H, W = dout.shape
-            dout = dout.reshape(N, -1)
+function backward(self::BatchNormalization, dout)
+    if ndims(dout) != 2
+        N, C, H, W = size(dout)
+        dout = reshape(dout, N, :)
+    end
+    dx = __backward(self, dout)
 
-        dx = self.__backward(dout)
+    dx = reshape(dx, self.input_shape)
+    return dx
+end
 
-        dx = dx.reshape(*self.input_shape)
-        return dx
+function __backward(self::BatchNormalization, dout)
+    dbeta = sum(dout, dims=1)
+    dgamma = sum(self.xn .* dout, dims=1)
+    dxn = self.gamma .* dout
+    dxc = dxn ./ self.std
+    dstd = -sum((dxn .* self.xc) ./ (self.std.^2), dims=1)
+    dvar = 0.5 * dstd ./ self.std
+    dxc .+= (2.0 / self.batch_size) * self.xc .* dvar
+    dmu = sum(dxc, dims=1)
+    dx = dxc .- dmu ./ self.batch_size
+    
+    self.dgamma = dgamma
+    self.dbeta = dbeta
+    
+    return dx
+end
 
-    def __backward(self, dout):
-        dbeta = dout.sum(axis=0)
-        dgamma = np.sum(self.xn * dout, axis=0)
-        dxn = self.gamma * dout
-        dxc = dxn / self.std
-        dstd = -np.sum((dxn * self.xc) / (self.std * self.std), axis=0)
-        dvar = 0.5 * dstd / self.std
-        dxc += (2.0 / self.batch_size) * self.xc * dvar
-        dmu = np.sum(dxc, axis=0)
-        dx = dxc - dmu / self.batch_size
-        
-        self.dgamma = dgamma
-        self.dbeta = dbeta
-        
-        return dx
-
-
+#=
 class Convolution:
     def __init__(self, W, b, stride=1, pad=0):
         self.W = W

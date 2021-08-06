@@ -158,6 +158,10 @@
 　[6.2.2 隠れ層のアクティベーション分布](./md/ch06.md#622-隠れ層のアクティベーション分布)  
 　6.2.3 ReLUの場合の重みの初期値  
 　6.2.4 MNISTデータセットによる重み初期値の比較  
+6.3 Batch Normalization  
+　6.3.1 Batch Normalization のアルゴリズム  
+　6.3.2 Batch Normalization の評価  
+6.4 正則化  
 
 ### 7章 ニューラルネットワーク
 
