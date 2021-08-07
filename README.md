@@ -162,6 +162,8 @@
 　6.3.1 Batch Normalization のアルゴリズム  
 　6.3.2 Batch Normalization の評価  
 6.4 正則化  
+　[6.4.1 過学習](./md/ch06.md#641-過学習)  
+　6.4.2 Weight decay
 
 ### 7章 ニューラルネットワーク
 
