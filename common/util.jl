@@ -24,7 +24,7 @@ function shuffle_dataset(x, t)
     """
     permutation = randperm(size(x, 1))
     x = ndims(x) == 2 ? x[permutation,:] : x[permutation,:,:,:]
-    t = t[permutation,:]
+    t = ndims(t) == 1 ? t[permutation] : t[permutation,:]
 
     return x, t
 end

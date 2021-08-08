@@ -130,7 +130,7 @@ function forward(self::Dropout, x, train_flg=true)
 end
 
 function backward(self::Dropout, dout)
-    return dout * self.mask
+    return dout .* self.mask
 end
 
 
