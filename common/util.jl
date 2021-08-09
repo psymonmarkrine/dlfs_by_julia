@@ -53,7 +53,7 @@ function padzero(x::Array{T}, v::Vector{Tuple{Y,Y}}) where {T <: Real, Y <: Inte
     return x
 end
 
-function im2col(input_data, filter_h::Integer, filter_w::Integer, stride::Integer=1, pad::Integer=0)
+function im2col(input_data::Array{T, 4}, filter_h::Integer, filter_w::Integer; stride::Integer=1, pad::Integer=0) where T <: Real
     """
     Parameters
     ----------
@@ -74,10 +74,10 @@ function im2col(input_data, filter_h::Integer, filter_w::Integer, stride::Intege
     col = zeros(N, C, filter_h, filter_w, out_h, out_w)
 
     for y = 1:filter_h
-        y_max = y + stride*out_h
+        y_max = y + stride*(out_h-1)
         for x = 1:filter_w
-            x_max = x + stride*out_w
-            col[:, :, y, x, :, :] = img[:, :, y:y_max:stride, x:x_max:stride]
+            x_max = x + stride*(out_w-1)
+            col[:, :, y, x, :, :] = img[:, :, y:stride:y_max, x:stride:x_max]
         end
     end
 
@@ -85,7 +85,7 @@ function im2col(input_data, filter_h::Integer, filter_w::Integer, stride::Intege
     return col
 end
 
-function col2im(col, input_shape, filter_h::Integer, filter_w::Integer, stride::Integer=1, pad::Integer=0)
+function col2im(col, input_shape, filter_h::Integer, filter_w::Integer; stride::Integer=1, pad::Integer=0)
     """
     Parameters
     ----------
@@ -101,16 +101,36 @@ function col2im(col, input_shape, filter_h::Integer, filter_w::Integer, stride::
     N, C, H, W = input_shape
     out_h = div(H + 2*pad - filter_h, stride) + 1
     out_w = div(W + 2*pad - filter_w, stride) + 1
-    col = permutedims(reshape(col, N, out_h, out_w, C, filter_h, filter_w), [1, 4, 5, 6, 2, 3])
+    col = permutedims(reshape(col, (N, out_h, out_w, C, filter_h, filter_w)), [1, 4, 5, 6, 2, 3])
 
     img = zeros(N, C, H + 2*pad + stride - 1, W + 2*pad + stride - 1)
     for y = 1:filter_h
         y_max = y + stride*out_h
         for x = 1:filter_w
             x_max = x + stride*out_w
-            img[:, :, y:y_max:stride, x:x_max:stride] .+= col[:, :, y, x, :, :]
+            img[:, :, y:stride:y_max, x:stride:x_max] .+= col[:, :, y, x, :, :]
         end
     end
 
-    return img[:, :, pad:H + pad, pad:W + pad]
+    return img[:, :, pad:H .+ pad, pad:W .+ pad]
 end
+
+function getpart(x::Array{T,N}, indexes) where {T,N}
+    """Pythonのインデックスっぽく取り出すための関数
+    ```
+    julia> x = rand(10, 3, 28, 28);
+
+    julia> size(x)
+    (10, 3, 28, 28)
+
+    julia> size(getpart(x, (2:5, :, 3)))
+    (4, 3, 28)
+
+    julia> size(getpart(x, (2:5,)))
+    (4, 3, 28, 28)
+    ```
+    """
+    l = length(indexes)
+    d = ndims(x)
+    return x[[i>l ? (:) : indexes[i] for i=1:d]...]
+  end
