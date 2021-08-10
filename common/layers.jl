@@ -225,92 +225,101 @@ function __backward(self::BatchNormalization, dout)
     return dx
 end
 
-#=
-class Convolution:
-    def __init__(self, W, b, stride=1, pad=0):
-        self.W = W
-        self.b = b
-        self.stride = stride
-        self.pad = pad
-        
-        # 中間データ（backward時に使用）
-        self.x = None   
-        self.col = None
-        self.col_W = None
-        
-        # 重み・バイアスパラメータの勾配
-        self.dW = None
-        self.db = None
 
-    def forward(self, x):
-        FN, C, FH, FW = self.W.shape
-        N, C, H, W = x.shape
-        out_h = 1 + int((H + 2*self.pad - FH) / self.stride)
-        out_w = 1 + int((W + 2*self.pad - FW) / self.stride)
+mutable struct Convolution{T <: Real, Y <: Real}
+    w::Array{T, 4} 
+    b::Array{T, 1}
+    stride::Integer
+    pad::Integer
+    # 中間データ（backward時に使用）
+    x::Array{Y, 4}
+    col::Array{T, 2}
+    col_W::Array{T, 2}
+    # 重み・バイアスパラメータの勾配
+    dW::Array{T, 4}
+    db::Array{T, 1}
+end
 
-        col = im2col(x, FH, FW, self.stride, self.pad)
-        col_W = self.W.reshape(FN, -1).T
+function Convolution(W, b, stride=1, pad=0)
+    t = eltype(W)
+    return Convolution(W, b, stride, pad, zeros(t, 0,0,0,0), zeros(t,0,0), zeros(t,0,0), zero(W), zero(b))
+end
 
-        out = np.dot(col, col_W) + self.b
-        out = out.reshape(N, out_h, out_w, -1).transpose(0, 3, 1, 2)
+function forward(self::Convolution, x)
+    FN, C, FH, FW = size(self.W)
+    N, C, H, W = size(x)
+    out_h = 1 + Integer(round((H + 2*self.pad - FH) / self.stride))
+    out_w = 1 + Integer(round((W + 2*self.pad - FW) / self.stride))
 
-        self.x = x
-        self.col = col
-        self.col_W = col_W
+    col = im2col(x, FH, FW, stride=self.stride, pad=self.pad)
+    col_W = reshape(self.W, (FN, :))'
 
-        return out
+    out = col * col_W .+ self.b
+    out = permutedims(reshape(out, (N, out_h, out_w, :)), [1, 4, 2, 3])
 
-    def backward(self, dout):
-        FN, C, FH, FW = self.W.shape
-        dout = dout.transpose(0,2,3,1).reshape(-1, FN)
+    self.x = x
+    self.col = col
+    self.col_W = col_W
 
-        self.db = np.sum(dout, axis=0)
-        self.dW = np.dot(self.col.T, dout)
-        self.dW = self.dW.transpose(1, 0).reshape(FN, C, FH, FW)
+    return out
+end
 
-        dcol = np.dot(dout, self.col_W.T)
-        dx = col2im(dcol, self.x.shape, FH, FW, self.stride, self.pad)
+function backward(self::Convolution, dout)
+    FN, C, FH, FW = size(self.W)
+    dout = reshape(permutedims(dout, [1,3,4,2]), (:, FN))
 
-        return dx
+    self.db = sum(dout, dims=1)
+    dW = self.col' * dout
+    self.dW = reshape(permutedims(dW, [2, 1]), (FN, C, FH, FW))
+
+    dcol = dout * self.col_W'
+    dx = col2im(dcol, size(self.x), FH, FW, stride=self.stride, pad=self.pad)
+
+    return dx
+end
 
 
-class Pooling:
-    def __init__(self, pool_h, pool_w, stride=2, pad=0):
-        self.pool_h = pool_h
-        self.pool_w = pool_w
-        self.stride = stride
-        self.pad = pad
-        
-        self.x = None
-        self.arg_max = None
+mutable struct Pooling{T <: Real}
+    pool_h::Integer
+    pool_w::Integer
+    stride::Integer
+    pad::Integer
+    x::Array{T, 4}
+    arg_max
+end
 
-    def forward(self, x):
-        N, C, H, W = x.shape
-        out_h = int(1 + (H - self.pool_h) / self.stride)
-        out_w = int(1 + (W - self.pool_w) / self.stride)
+function Pooling(pool_h, pool_w, stride=2, pad=0)
+    return Pooling(pool_h, pool_w, stride, pad, zeros(0,0,0,0), nothing)
+end
 
-        col = im2col(x, self.pool_h, self.pool_w, self.stride, self.pad)
-        col = col.reshape(-1, self.pool_h*self.pool_w)
+function forward(self::Pooling, x)
+    N, C, H, W = size(x)
+    out_h = Integer(round(1 + (H - self.pool_h) / self.stride))
+    out_w = Integer(round(1 + (W - self.pool_w) / self.stride))
 
-        arg_max = np.argmax(col, axis=1)
-        out = np.max(col, axis=1)
-        out = out.reshape(N, out_h, out_w, C).transpose(0, 3, 1, 2)
+    col = im2col(x, self.pool_h, self.pool_w, stride=self.stride, pad=self.pad)
+    col = reshape(col, (:, self.pool_h*self.pool_w))
 
-        self.x = x
-        self.arg_max = arg_max
+    arg_max = argmax(col, dims=2)
+    out = maximum(col, dims=2)
+    out = permutedims(reshape(out, (N, out_h, out_w, C)), (1, 4, 2, 3))
 
-        return out
+    self.x = x
+    self.arg_max = arg_max
 
-    def backward(self, dout):
-        dout = dout.transpose(0, 2, 3, 1)
-        
-        pool_size = self.pool_h * self.pool_w
-        dmax = np.zeros((dout.size, pool_size))
-        dmax[np.arange(self.arg_max.size), self.arg_max.flatten()] = dout.flatten()
-        dmax = dmax.reshape(dout.shape + (pool_size,)) 
-        
-        dcol = dmax.reshape(dmax.shape[0] * dmax.shape[1] * dmax.shape[2], -1)
-        dx = col2im(dcol, self.x.shape, self.pool_h, self.pool_w, self.stride, self.pad)
-        
-        return dx
-=#
+    return out
+end
+
+function backward(self::Pooling, dout)
+    dout = permutedims(dout, (1, 3, 4, 2))
+    
+    pool_size = self.pool_h * self.pool_w
+    dmax = zeros(length(dout), pool_size)
+    dmax[self.arg_max] = reshape(dout, :)
+    dmax = reshape(dmax, size(dout)..., pool_size) 
+    
+    dcol = reshape(dmax, size(dmax, 1) * size(dmax, 2) * size(dmax, 3), :)
+    dx = col2im(dcol, size(self.x), self.pool_h, self.pool_w, stride=self.stride, pad=self.pad)
+    
+    return dx
+end
