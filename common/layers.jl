@@ -10,18 +10,18 @@ end
 Relu() = Relu(nothing)
 
 function forward(self::Relu, x)
-        self.mask = (x .<= 0)
-        out = x
-        out[self.mask] .= 0
+    self.mask = (x .<= 0)
+    out = x
+    out[self.mask] .= 0
 
-        return out
+    return out
 end
 
 function backward(self::Relu, dout)
-        dout[self.mask] .= 0
-        dx = dout
+    dout[self.mask] .= 0
+    dx = dout
 
-        return dx
+    return dx
 end
 
 
@@ -54,6 +54,9 @@ mutable struct Affine
 end
 
 function Affine(W, b)
+    if ndims(b)==1
+        b = reshape(b, 1, :)
+    end
     Affine(W, b, nothing, nothing, nothing, nothing)
 end
 
@@ -227,8 +230,8 @@ end
 
 
 mutable struct Convolution{T <: Real, Y <: Real}
-    w::Array{T, 4} 
-    b::Array{T, 1}
+    W::Array{T, 4} 
+    b::Array{T, 2}
     stride::Integer
     pad::Integer
     # 中間データ（backward時に使用）
@@ -237,19 +240,22 @@ mutable struct Convolution{T <: Real, Y <: Real}
     col_W::Array{T, 2}
     # 重み・バイアスパラメータの勾配
     dW::Array{T, 4}
-    db::Array{T, 1}
+    db::Array{T, 2}
 end
 
-function Convolution(W, b, stride=1, pad=0)
+function Convolution(W, b; stride=1, pad=0)
     t = eltype(W)
+    if ndims(b)==1
+        b = reshape(b, 1, :)
+    end
     return Convolution(W, b, stride, pad, zeros(t, 0,0,0,0), zeros(t,0,0), zeros(t,0,0), zero(W), zero(b))
 end
 
 function forward(self::Convolution, x)
     FN, C, FH, FW = size(self.W)
     N, C, H, W = size(x)
-    out_h = 1 + Integer(round((H + 2*self.pad - FH) / self.stride))
-    out_w = 1 + Integer(round((W + 2*self.pad - FW) / self.stride))
+    out_h = 1 + Integer(floor((H + 2*self.pad - FH) / self.stride))
+    out_w = 1 + Integer(floor((W + 2*self.pad - FW) / self.stride))
 
     col = im2col(x, FH, FW, stride=self.stride, pad=self.pad)
     col_W = reshape(self.W, (FN, :))'
@@ -288,14 +294,14 @@ mutable struct Pooling{T <: Real}
     arg_max
 end
 
-function Pooling(pool_h, pool_w, stride=2, pad=0)
+function Pooling(pool_h, pool_w; stride=2, pad=0)
     return Pooling(pool_h, pool_w, stride, pad, zeros(0,0,0,0), nothing)
 end
 
 function forward(self::Pooling, x)
     N, C, H, W = size(x)
-    out_h = Integer(round(1 + (H - self.pool_h) / self.stride))
-    out_w = Integer(round(1 + (W - self.pool_w) / self.stride))
+    out_h = Integer(floor(1 + (H - self.pool_h) / self.stride))
+    out_w = Integer(floor(1 + (W - self.pool_w) / self.stride))
 
     col = im2col(x, self.pool_h, self.pool_w, stride=self.stride, pad=self.pad)
     col = reshape(col, (:, self.pool_h*self.pool_w))

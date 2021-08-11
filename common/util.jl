@@ -105,32 +105,12 @@ function col2im(col, input_shape, filter_h::Integer, filter_w::Integer; stride::
 
     img = zeros(N, C, H + 2*pad + stride - 1, W + 2*pad + stride - 1)
     for y = 1:filter_h
-        y_max = y + stride*out_h
+        y_max = y + stride*(out_h-1)
         for x = 1:filter_w
-            x_max = x + stride*out_w
+            x_max = x + stride*(out_w-1)
             img[:, :, y:stride:y_max, x:stride:x_max] .+= col[:, :, y, x, :, :]
         end
     end
 
-    return img[:, :, pad:H .+ pad, pad:W .+ pad]
+    return img[:, :, (pad+1:H) .+ pad, (pad+1:W) .+ pad]
 end
-
-function getpart(x::Array{T,N}, indexes) where {T,N}
-    """Pythonのインデックスっぽく取り出すための関数
-    ```
-    julia> x = rand(10, 3, 28, 28);
-
-    julia> size(x)
-    (10, 3, 28, 28)
-
-    julia> size(getpart(x, (2:5, :, 3)))
-    (4, 3, 28)
-
-    julia> size(getpart(x, (2:5,)))
-    (4, 3, 28, 28)
-    ```
-    """
-    l = length(indexes)
-    d = ndims(x)
-    return x[[i>l ? (:) : indexes[i] for i=1:d]...]
-  end
