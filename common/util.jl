@@ -114,3 +114,15 @@ function col2im(col, input_shape, filter_h::Integer, filter_w::Integer; stride::
 
     return img[:, :, (pad+1:H) .+ pad, (pad+1:W) .+ pad]
 end
+
+function weight_init_randn(shape, init_std=0.01)
+    input_size = length(shape)==2 ? shape[1] : *(shape[2:end]...)
+    scale = init_std
+    if lowercase("$init_std") in ("relu", "he")
+        scale = sqrt(2.0 / input_size)  # ReLUを使う場合に推奨される初期値
+    elseif lowercase("$init_std") in ("sigmoid", "xavier")
+        scale = sqrt(1.0 / input_size)  # sigmoidを使う場合に推奨される初期値
+    end
+
+    return scale * randn(shape)
+end
