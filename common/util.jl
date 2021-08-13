@@ -112,7 +112,7 @@ function col2im(col, input_shape, filter_h::Integer, filter_w::Integer; stride::
         end
     end
 
-    return img[:, :, (pad+1:H) .+ pad, (pad+1:W) .+ pad]
+    return img[:, :, (1:H) .+ pad, (1:W) .+ pad]
 end
 
 function weight_init_randn(shape, init_std=0.01)
