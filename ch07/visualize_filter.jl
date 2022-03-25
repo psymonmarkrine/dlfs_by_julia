@@ -3,7 +3,7 @@ include("simple_convnet.jl") # SimpleConvNet
 
 function filter_show(filters, nx=5)
     FN, C, FH, FW = size(filters)
-    ny = Integer(ceil(FN / nx))
+    ny = ceil(Int, FN / nx)
  
     p = []
     for i = 1:FN
