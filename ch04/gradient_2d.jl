@@ -23,7 +23,7 @@ function numerical_gradient(f, X::Vector{T}) where T
     return _numerical_gradient_no_batch(f, X)
 end
 
-function numerical_gradient(f, X)
+function numerical_gradient(f, X::Matrix{T}) where T
     grad = zero(X)
     
     for idx=1:size(X,1)
@@ -32,11 +32,11 @@ function numerical_gradient(f, X)
     return grad
 end
 
-function function_2(x::Vector{T}) where T
+function function_2(x::Vector{T}) where T <: Real
     return sum(x.^2)
 end
 
-function function_2(x)
+function function_2(x::Matrix{T}) where T <: Real
     return function_2.([x[i,:] for i=1:size(x,1)])
 end
 

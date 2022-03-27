@@ -18,7 +18,7 @@ function relu(x)
     return maximum(0, x)
 end
 
-function relu_grad(x::T) where T <: Array{Y} where Y <:Real
+function relu_grad(x::Array{T}) where T <: Real
     grad = zero(x)
     grad[x.>=0] = 1
     return grad

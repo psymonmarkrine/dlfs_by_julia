@@ -1,11 +1,15 @@
 using Plots
 
-function sigmoid(x)
+function sigmoid(x::Real)
     return 1 / (1 + exp(-x))    
 end
 
-function step_function(x)
-    return typeof(x)(x > 0)
+# function step_function(x)
+#     return typeof(x)(x > 0)
+# end
+
+function step_function(x::T) where T <: Real
+    return T(x > 0)
 end
 
 x = range(-5.0, 5.0, step=0.1)

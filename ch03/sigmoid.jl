@@ -1,7 +1,7 @@
 using Plots
 
-function sigmoid(x)
-    return 1 / (1 + exp(-x))    
+function sigmoid(x::Real)
+    return 1 / (1 + exp(-x))
 end
 
 X = range(-5.0, 5.0, step=0.1)
