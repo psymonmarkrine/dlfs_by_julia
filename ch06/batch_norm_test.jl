@@ -1,8 +1,11 @@
+include("../dataset/mnist.jl")
+
 import Random: shuffle
 
 import OrderedCollections: OrderedDict
 using Plots
-include("../dataset/mnist.jl") # load_mnist
+
+import .MNIST: load_mnist
 include("../common/multi_layer_net_extend.jl") # MultiLayerNetExtend
 include("../common/optimizer.jl") # SGD, Adam
 

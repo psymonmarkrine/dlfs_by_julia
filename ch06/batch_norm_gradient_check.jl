@@ -1,6 +1,8 @@
+include("../dataset/mnist.jl")
+
 import Statistics: mean
 
-include("../dataset/mnist.jl") # load_mnist
+import .MNIST: load_mnist
 include("../common/multi_layer_net_extend.jl") # MultiLayerNetExtend
 
 # データの読み込み

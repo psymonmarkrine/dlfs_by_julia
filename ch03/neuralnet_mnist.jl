@@ -1,5 +1,8 @@
+include("../dataset/mnist.jl")
+
 import HDF5
-include("../dataset/mnist.jl") # load_mnist
+
+import .MNIST: load_mnist
 include("../common/functions.jl") # sigmoid, softmax
 
 

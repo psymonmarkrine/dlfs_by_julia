@@ -1,7 +1,9 @@
+include("../dataset/mnist.jl")
+
 import Random: shuffle
 import Printf: @sprintf
 
-include("../dataset/mnist.jl") # load_mnist
+import .MNIST: load_mnist
 include("two_layer_net.jl") # TwoLayerNet
 
 # データの読み込み

@@ -1,7 +1,10 @@
+include("../dataset/mnist.jl")
+
 import Random: shuffle
 
 using Plots
-include("../dataset/mnist.jl") # load_mnist
+
+import .MNIST: load_mnist
 include("../common/util.jl") # smooth_curve
 include("../common/multi_layer_net.jl") # MultiLayerNet
 include("../common/optimizer.jl")

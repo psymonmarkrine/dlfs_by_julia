@@ -1,5 +1,8 @@
+include("../dataset/mnist.jl")
+
 using Plots
-include("../dataset/mnist.jl") # load_mnist
+
+import .MNIST: load_mnist
 include("../common/multi_layer_net.jl") # MultiLayerNet
 include("../common/util.jl") # shuffle_dataset
 include("../common/trainer.jl") # Trainer

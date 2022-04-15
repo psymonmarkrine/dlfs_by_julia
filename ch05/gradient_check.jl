@@ -1,5 +1,8 @@
+include("../dataset/mnist.jl")
+
 import Statistics: mean
-include("../dataset/mnist.jl") # load_mnist
+
+import .MNIST: load_mnist
 include("two_layer_net.jl") # TwoLayerNet
 
 # データの読み込み

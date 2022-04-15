@@ -1,5 +1,8 @@
+include("../dataset/mnist.jl")
+
 using Plots
-include("../dataset/mnist.jl") # load_mnist
+
+import .MNIST: load_mnist
 include("deep_convnet.jl") # DeepConvNet
 include("../common/trainer.jl") # Trainer
 

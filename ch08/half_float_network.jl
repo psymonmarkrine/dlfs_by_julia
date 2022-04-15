@@ -1,6 +1,8 @@
-include("deep_convnet.jl") # DeepConvNet
-include("../dataset/mnist.jl") # load_mnist
+include("../dataset/mnist.jl")
 
+include("deep_convnet.jl") # DeepConvNet
+
+import .MNIST: load_mnist
 
 (x_train, t_train), (x_test, t_test) = load_mnist(flatten=false)
 
