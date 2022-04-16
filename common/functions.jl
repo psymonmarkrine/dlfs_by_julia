@@ -1,3 +1,11 @@
+module Functions
+
+export identity_function, step_function,
+       sigmoid, sigmoid_grad,
+       relu, relu_grad,
+       softmax, softmax_loss,
+       sum_squared_error, cross_entropy_error
+
 function identity_function(x)
     return x
 end
@@ -62,3 +70,5 @@ function softmax_loss(X, t)
     y = softmax(X)
     return cross_entropy_error(y, t)
 end
+
+end # module Functions

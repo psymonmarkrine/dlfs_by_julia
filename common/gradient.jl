@@ -1,3 +1,5 @@
+module Gradient
+
 function _numerical_gradient_1d(f, x::Vector{T}) where T <: AbstractFloat
     h = 1e-4 # 0.0001
     grad = zero(x)
@@ -47,3 +49,5 @@ function numerical_gradient(f, x)
     
     return grad
 end
+
+end # module Gradient

@@ -1,7 +1,11 @@
+module Trainers
+
+export Trainer, train, train_step
+
 import Random: shuffle
 import Printf: @sprintf
 
-include("optimizer.jl")
+using ..Optimizer
 
 function getpart(x::Array{T,N}, indexes) where {T,N}
     """Pythonのインデックスっぽく取り出すための関数

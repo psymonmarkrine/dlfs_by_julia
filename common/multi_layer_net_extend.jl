@@ -1,9 +1,3 @@
-import OrderedCollections: OrderedDict
-
-include("layers.jl")
-include("gradient.jl") # numerical_gradient
-
-
 mutable struct MultiLayerNetExtend
     input_size::Integer
     output_size::Integer

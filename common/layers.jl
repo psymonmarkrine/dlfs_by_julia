@@ -1,7 +1,14 @@
-import Statistics: mean
+module Layers
 
-include("functions.jl")
-include("util.jl") # im2col, col2im
+export  forward, backward, 
+        Relu, Sigmoid, SoftmaxWithLoss,
+        Dropout, BatchNormalization,
+        Affine, Convolution, Pooling
+
+import  Statistics: mean
+
+using   ..Functions
+import  ..Util: im2col, col2im
 
 mutable struct Relu
     mask
@@ -329,3 +336,5 @@ function backward(self::Pooling, dout)
     
     return dx
 end
+
+end # module Layers

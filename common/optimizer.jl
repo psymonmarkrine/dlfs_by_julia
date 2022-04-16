@@ -1,3 +1,7 @@
+module Optimizer
+
+export update, SGD, Momentum, Nesterov, AdaGrad, RMSprop, Adam
+
 mutable struct SGD # """確率的勾配降下法（Stochastic Gradient Descent）"""
     lr::AbstractFloat
 end
@@ -107,3 +111,5 @@ function update(self::Adam, params, grads)
         #params[key] .+= self.lr * unbias_m ./ (sqrt.(unbisa_b) + 1e-7)
     end
 end
+
+end # module Optimizer

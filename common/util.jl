@@ -1,3 +1,5 @@
+module Util
+
 import Random: randperm
 
 function smooth_curve(x)
@@ -126,3 +128,5 @@ function weight_init_randn(shape, init_std=0.01)
 
     return scale * randn(shape)
 end
+
+end # module Util
