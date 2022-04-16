@@ -1,3 +1,12 @@
+""" 
+   MNIST_DL
+
+MNISTデータセットをダウンロードするためのモジュール
+
+`.gzファイル`をダウンロードして`.h5ファイル`へと変換する。
+`.gzファイル`を読むために追加パッケージ `GZip` が必要だが、
+リポジトリに`.h5ファイル`を同梱しているためこのモジュールを使用する必要はないはず。
+"""
 module MNIST_DL
     import Downloads
     import GZip, HDF5
@@ -13,8 +22,6 @@ module MNIST_DL
     dataset_dir = dirname(abspath(@__FILE__))
     save_file = joinpath(dataset_dir, "mnist.h5")
 
-    train_num = 60000
-    test_num = 10000
     img_size = 784
 
 
@@ -85,8 +92,6 @@ module MNIST_DL
     end
 end
 
-import .MNIST_DL: init_mnist
-
 if abspath(PROGRAM_FILE) == @__FILE__
-    init_mnist()
+    Main.MNIST_DL.init_mnist()
 end

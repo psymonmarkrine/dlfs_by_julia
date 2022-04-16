@@ -1,13 +1,20 @@
-include("mnist_dl.jl")
-
 module MNIST
-    import MNIST_DL: init_mnist, key_file, train_num, test_num, img_size
     import Downloads
     import HDF5
+
+    key_file = Dict(
+        "train_img"=>"train-images-idx3-ubyte.gz",
+        "train_label"=>"train-labels-idx1-ubyte.gz",
+        "test_img"=>"t10k-images-idx3-ubyte.gz",
+        "test_label"=>"t10k-labels-idx1-ubyte.gz"
+    )
 
     dataset_dir = dirname(abspath(@__FILE__))
     save_file = joinpath(dataset_dir, "mnist.h5")
 
+    train_num = 60000
+    test_num = 10000
+    img_size = 784
     img_dim = (1, 28, 28)
     
 
@@ -36,7 +43,7 @@ module MNIST
         """
         if !isfile(save_file)
             include(joinpath(dirname(save_file),"mnist_dl.jl"))
-            init_mnist()
+            Main.MNIST_DL.init_mnist()
         end
 
         dataset = Dict()
