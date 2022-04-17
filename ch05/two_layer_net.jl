@@ -1,8 +1,9 @@
-import OrderedCollections: OrderedDict
+include("../common/commons.jl")
 
-include("../common/layers.jl")
-include("../common/gradient.jl") # numerical_gradient
-# from collections import OrderedDict
+import  OrderedCollections: OrderedDict
+
+import  .Gradient: numerical_gradient
+using   .Layers
 
 
 struct TwoLayerNet
