@@ -1,10 +1,13 @@
 include("../common/commons.jl")
 
+module TwoLayerNet_ch05
+
 import  OrderedCollections: OrderedDict
 
-import  .Gradient: numerical_gradient
-using   .Layers
+import  ..Gradient: numerical_gradient
+using   ..Layers
 
+export  TwoLayerNet, predict, loss, accuracy, numerical_gradient, gradient
 
 struct TwoLayerNet
     params::Dict
@@ -97,3 +100,5 @@ function gradient(self::TwoLayerNet, x, t)
     )
     return grads
 end
+
+end # module TwoLayerNet_ch05

@@ -1,9 +1,11 @@
 include("../dataset/mnist.jl")
+include("two_layer_net.jl")
 
 import Statistics: mean
 
-import .MNIST: load_mnist
-include("two_layer_net.jl") # TwoLayerNet
+import  .MNIST: load_mnist
+using   .TwoLayerNet_ch05 # TwoLayerNet
+
 
 # データの読み込み
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=true, one_hot_label=true)
