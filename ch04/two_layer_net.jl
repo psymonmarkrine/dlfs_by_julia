@@ -1,5 +1,12 @@
 include("../common/functions.jl")
-include("../common/gradient.jl") # numerical_gradient
+include("../common/gradient.jl")
+
+module TwoLayerNet_ch04
+
+using   ..Functions
+import  ..Gradient: numerical_gradient
+
+export  TwoLayerNet, predict, loss, accuracy, numerical_gradient, gradient
 
 mutable struct TwoLayerNet
     params::Dict{String, Matrix{T}} where T <: AbstractFloat
@@ -81,3 +88,5 @@ function gradient(self::TwoLayerNet, x, t)
 
     return grads
 end
+
+end # module TwoLayerNet_ch04

@@ -1,11 +1,13 @@
 include("../dataset/mnist.jl")
+include("two_layer_net.jl")
 
 import Random: shuffle
 import Printf: @sprintf
 using Plots
 
 import .MNIST: load_mnist
-include("two_layer_net.jl") # TwoLayerNet
+using .TwoLayerNet_ch04
+
 
 # データの読み込み
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=true, one_hot_label=true)

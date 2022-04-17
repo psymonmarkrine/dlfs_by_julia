@@ -1,5 +1,8 @@
-include("../common/functions.jl") # softmax, cross_entropy_error
-include("../common/gradient.jl") # numerical_gradient
+include("../common/functions.jl")
+include("../common/gradient.jl")
+
+import  .Functions: softmax, cross_entropy_error
+import  .Gradient: numerical_gradient
 
 
 struct SimpleNet
@@ -28,4 +31,4 @@ net = SimpleNet([0.47355232 0.9977393 0.84668094; 0.85557411 0.03563661 0.694220
 f = (w)->loss(net, x, t)
 dW = numerical_gradient(f, net.W)
 
-print(dW)
+display(dW)
