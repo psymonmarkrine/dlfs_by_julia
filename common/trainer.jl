@@ -119,3 +119,5 @@ function train(self::Trainer)
         println("test acc : $test_acc")
     end
 end
+
+end # module Trainers
