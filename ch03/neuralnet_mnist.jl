@@ -1,10 +1,10 @@
 include("../dataset/mnist.jl")
+include("../common/functions.jl")
 
 import HDF5
 
 import .MNIST: load_mnist
-include("../common/functions.jl") # sigmoid, softmax
-
+import .Functions: sigmoid, softmax
 
 function get_data()
     (x_train, t_train), (x_test, t_test) = load_mnist(normalize=true, flatten=true, one_hot_label=false)
