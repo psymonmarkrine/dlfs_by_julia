@@ -12,8 +12,8 @@ export  MultiLayerNet, MultiLayerNetExtend,
 
 import  OrderedCollections: OrderedDict
 
-using   Layers
-import  Gradient: numerical_gradient
+using   ..Layers
+import  ..Gradient: numerical_gradient
 
 include("multi_layer_net.jl")
 include("multi_layer_net_extend.jl")
