@@ -5,7 +5,8 @@ export Trainer, train, train_step
 import Random: shuffle
 import Printf: @sprintf
 
-using ..Optimizer
+using  ..Optimizer
+using  ..MultiLayerNets
 
 function getpart(x::Array{T,N}, indexes) where {T,N}
     """Pythonのインデックスっぽく取り出すための関数

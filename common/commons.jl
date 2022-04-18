@@ -3,7 +3,6 @@ include("gradient.jl")
 include("util.jl")
 include("optimizer.jl")
 include("layers.jl")
-include("trainer.jl")
 
 module MultiLayerNets
 
@@ -19,3 +18,5 @@ include("multi_layer_net.jl")
 include("multi_layer_net_extend.jl")
 
 end # module MultiLayerNets
+
+include("trainer.jl")
