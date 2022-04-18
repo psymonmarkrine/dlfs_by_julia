@@ -1,9 +1,10 @@
 include("../dataset/mnist.jl")
+include("../common/commons.jl")
 
 import Statistics: mean
 
 import .MNIST: load_mnist
-include("../common/multi_layer_net_extend.jl") # MultiLayerNetExtend
+using  .MultiLayerNets
 
 # データの読み込み
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=true, one_hot_label=true)

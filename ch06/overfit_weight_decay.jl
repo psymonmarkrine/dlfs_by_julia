@@ -1,4 +1,5 @@
 include("../dataset/mnist.jl")
+include("../common/commons.jl")
 
 import Random: shuffle
 
@@ -6,8 +7,9 @@ import OrderedCollections: OrderedDict
 using Plots
 
 import .MNIST: load_mnist
-include("../common/multi_layer_net.jl") # MultiLayerNet
-include("../common/optimizer.jl") # SGD
+import .Optimizer: SGD, update
+using  .MultiLayerNets
+
 
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=true)
 

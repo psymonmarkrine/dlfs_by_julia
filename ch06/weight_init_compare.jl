@@ -1,4 +1,5 @@
 include("../dataset/mnist.jl")
+include("../common/commons.jl")
 
 import Random: shuffle
 
@@ -6,9 +7,9 @@ import OrderedCollections: OrderedDict
 using Plots
 
 import .MNIST: load_mnist
-include("../common/util.jl") # smooth_curve
-include("../common/multi_layer_net.jl") # MultiLayerNet
-include("../common/optimizer.jl") # SGD
+import .Util: smooth_curve
+import .Optimizer: SGD, update
+using  .MultiLayerNets
 
 
 # 0:MNISTデータの読み込み==========

@@ -1,10 +1,12 @@
 include("../dataset/mnist.jl")
+include("../common/commons.jl")
 
 using Plots
 
 import .MNIST: load_mnist
-include("../common/multi_layer_net_extend.jl") # MultiLayerNetExtend
-include("../common/trainer.jl") # Trainer
+using  .Trainers
+using  .MultiLayerNets
+
 
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=true)
 

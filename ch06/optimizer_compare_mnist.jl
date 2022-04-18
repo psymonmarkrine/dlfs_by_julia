@@ -1,13 +1,14 @@
 include("../dataset/mnist.jl")
+include("../common/commons.jl")
 
 import Random: shuffle
 
 using Plots
 
 import .MNIST: load_mnist
-include("../common/util.jl") # smooth_curve
-include("../common/multi_layer_net.jl") # MultiLayerNet
-include("../common/optimizer.jl")
+import .Util: smooth_curve
+using  .Optimizer
+using  .MultiLayerNets
 
 
 # 0:MNISTデータの読み込み==========
