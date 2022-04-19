@@ -8,6 +8,7 @@ import Printf: @sprintf
 using  ..Optimizer
 using  ..MultiLayerNets
 
+
 function getpart(x::Array{T,N}, indexes) where {T,N}
     """Pythonのインデックスっぽく取り出すための関数
     ```
@@ -47,6 +48,9 @@ mutable struct Trainer
     train_loss_list
     train_acc_list
     test_acc_list
+    gradient::Function
+    loss::Function
+    accuracy::Function
 end
 
 """ニューラルネットの訓練を行うクラス
@@ -54,7 +58,9 @@ end
 function Trainer(network, x_train, t_train, x_test, t_test;
                  epochs=20, mini_batch_size=100,
                  optimizer="SGD", optimizer_param=(lr=0.01,), 
-                 evaluate_sample_num_per_epoch=nothing, verbose=true)
+                 evaluate_sample_num_per_epoch=nothing, verbose=true,
+                 gradient::Function=gradient, loss::Function=loss, accuracy::Function=accuracy,
+                 )
     # optimizer
     optimizer_class_dict = Dict("sgd"=>SGD, "momentum"=>Momentum, "nesterov"=>Nesterov,
     "adagrad"=>AdaGrad, "rmsprop"=>RMSprop, "adam"=>Adam)
@@ -67,7 +73,8 @@ function Trainer(network, x_train, t_train, x_test, t_test;
     return Trainer(network, verbose, x_train, t_train, x_test, t_test, 
                    epochs, mini_batch_size, evaluate_sample_num_per_epoch, optimizer,
                    train_size, iter_per_epoch, max_iter, 0, 0,
-                   zeros(0), zeros(0),  zeros(0)
+                   zeros(0), zeros(0),  zeros(0),
+                   gradient, loss, accuracy,
                   )
 end
 
@@ -76,10 +83,10 @@ function train_step(self::Trainer)
     x_batch = getpart(self.x_train, [batch_mask])
     t_batch = getpart(self.t_train, [batch_mask])
     
-    grads = gradient(self.network, x_batch, t_batch)
+    grads = self.gradient(self.network, x_batch, t_batch)
     update(self.optimizer, self.network.params, grads)
     
-    loss_val = loss(self.network, x_batch, t_batch)
+    loss_val = self.loss(self.network, x_batch, t_batch)
     append!(self.train_loss_list, loss_val)
     if self.verbose
         println("train loss : $loss_val")
@@ -97,8 +104,8 @@ function train_step(self::Trainer)
             x_test_sample = getpart(self.x_test, [1:t])
             t_test_sample = getpart(self.t_test, [1:t])
         end
-        train_acc = accuracy(self.network, x_train_sample, t_train_sample)
-        test_acc = accuracy(self.network, x_test_sample, t_test_sample)
+        train_acc = self.accuracy(self.network, x_train_sample, t_train_sample)
+        test_acc = self.accuracy(self.network, x_test_sample, t_test_sample)
         append!(self.train_acc_list, train_acc)
         append!(self.test_acc_list, test_acc)
 
@@ -113,7 +120,7 @@ function train(self::Trainer)
     for i = 1:self.max_iter
         train_step(self)
     end
-    test_acc = accuracy(self.network, self.x_test, self.t_test)
+    test_acc = self.accuracy(self.network, self.x_test, self.t_test)
 
     if self.verbose
         println("=============== Final Test Accuracy ===============")

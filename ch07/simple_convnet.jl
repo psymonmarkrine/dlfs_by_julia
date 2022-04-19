@@ -6,7 +6,7 @@ import HDF5
 
 import .Gradient: numerical_gradient
 using  .Layers
-
+import .Util: weight_init_randn
 
 mutable struct SimpleConvNet
     params::Dict

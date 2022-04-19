@@ -21,6 +21,7 @@ network = SimpleConvNet((1,28,28),
                         100, 10, 0.01)
 
 trainer = Trainer(network, x_train, t_train, x_test, t_test,
+                  gradient=gradient, loss=loss, accuracy=accuracy,
                   epochs=max_epochs, mini_batch_size=2000,
                   optimizer="Adam", optimizer_param=(lr=0.02),
                   evaluate_sample_num_per_epoch=1000)
