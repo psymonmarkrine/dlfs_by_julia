@@ -1,5 +1,7 @@
+include("simple_convnet.jl")
+
 using Plots
-include("simple_convnet.jl") # SimpleConvNet
+using .SimpleConvNet_ch07
 
 function filter_show(filters, nx=5)
     FN, C, FH, FW = size(filters)

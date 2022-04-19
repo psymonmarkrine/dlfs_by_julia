@@ -1,6 +1,9 @@
+include("simple_convnet.jl")
+
 import Statistics: mean
 
-include("simple_convnet.jl") # SimpleConvNet
+using  .SimpleConvNet_ch07
+
 
 network = SimpleConvNet((1,10, 10), 
                         Dict("filter_num"=>10, "filter_size"=>3, "pad"=>0, "stride"=>1),

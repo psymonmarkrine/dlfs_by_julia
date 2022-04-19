@@ -1,12 +1,16 @@
 include("../common/commons.jl")
 
+module SimpleConvNet_ch07
+
+export SimpleConvNet, predict, loss, accuracy, numerical_gradient, gradient,save_params,load_params
+
 import OrderedCollections: OrderedDict
 
 import HDF5
 
-import .Gradient: numerical_gradient
-using  .Layers
-import .Util: weight_init_randn
+import ..Gradient: numerical_gradient
+using  ..Layers
+import ..Util: weight_init_randn
 
 mutable struct SimpleConvNet
     params::Dict
@@ -181,3 +185,5 @@ function load_params(self, file_name="params.h5")
         self.layers[key].b = self.params["b$(i)"]
     end
 end
+
+end # module SimpleConvNet_07

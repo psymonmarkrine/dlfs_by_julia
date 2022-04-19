@@ -4,6 +4,7 @@ include("simple_convnet.jl")
 using Plots
 
 import .MNIST: load_mnist
+using  .SimpleConvNet_ch07
 using  .Trainers
 
 
@@ -11,8 +12,8 @@ using  .Trainers
 (x_train, t_train), (x_test, t_test) = load_mnist(flatten=false)
 
 # 処理に時間のかかる場合はデータを削減 
-#x_train, t_train = x_train[:5000], t_train[:5000]
-#x_test, t_test = x_test[:1000], t_test[:1000]
+# x_train, t_train = x_train[1:5000,:,:,:], t_train[1:5000]
+# x_test, t_test = x_test[1:1000,:,:,:], t_test[1:1000]
 
 max_epochs = 10
 
