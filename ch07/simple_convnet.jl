@@ -1,8 +1,12 @@
+include("../common/commons.jl")
+
 import OrderedCollections: OrderedDict
 
 import HDF5
-include("../common/layers.jl")
-include("../common/gradient.jl") # numerical_gradient
+
+import .Gradient: numerical_gradient
+using  .Layers
+
 
 mutable struct SimpleConvNet
     params::Dict

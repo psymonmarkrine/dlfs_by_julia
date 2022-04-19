@@ -1,11 +1,11 @@
 include("../dataset/mnist.jl")
+include("simple_convnet.jl")
 
 using Plots
 
-
 import .MNIST: load_mnist
-include("simple_convnet.jl") # SimpleConvNet
-include("../common/trainer.jl") # Trainer
+using  .Trainers
+
 
 # データの読み込み
 (x_train, t_train), (x_test, t_test) = load_mnist(flatten=false)
