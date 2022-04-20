@@ -1,9 +1,11 @@
+include("../dataset/mnist.jl")
+include("deep_convnet.jl")
+
 import OrderedCollections: OrderedDict
-
 using Plots
-include("deep_convnet.jl") # DeepConvNet
-include("../dataset/mnist.jl") # load_mnist
 
+import .MNIST: load_mnist
+using  .DeepConvNet_ch08
 
 (x_train, t_train), (x_test, t_test) = load_mnist(flatten=false)
 

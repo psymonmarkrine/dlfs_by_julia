@@ -1,8 +1,14 @@
+include("../common/commons.jl")
+
+module DeepConvNet_ch08
+
+export DeepConvNet, predict, gradient, loss, accuracy, save_params, load_params
+
 import OrderedCollections: OrderedDict
 
 import HDF5
-include("../common/layers.jl")
-
+using  ..Layers
+import ..Util: weight_init_randn
 
 mutable struct DeepConvNet
     params::Dict
@@ -147,3 +153,5 @@ function load_params(self::DeepConvNet, file_name="params.h5")
         self.layers[key].b = self.params["b$(i)"]
     end
 end
+
+end # module DeepConvNet_ch08
