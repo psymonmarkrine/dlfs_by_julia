@@ -56,7 +56,7 @@ end
 """ニューラルネットの訓練を行うクラス
 """
 function Trainer(network, x_train, t_train, x_test, t_test;
-                 epochs=20, mini_batch_size=100,
+                 epochs::Int=20, mini_batch_size::Int=100,
                  optimizer="SGD", optimizer_param=(lr=0.01,), 
                  evaluate_sample_num_per_epoch=nothing, verbose=true,
                  gradient::Function=gradient, loss::Function=loss, accuracy::Function=accuracy,
@@ -67,8 +67,8 @@ function Trainer(network, x_train, t_train, x_test, t_test;
     optimizer = optimizer_class_dict[lowercase(optimizer)](optimizer_param...)
 
     train_size = size(x_train, 1)
-    iter_per_epoch = max(Integer(floor(train_size / mini_batch_size)), 1)
-    max_iter = Integer(epochs * iter_per_epoch)
+    iter_per_epoch = max(floor(Int, train_size / mini_batch_size), 1)
+    max_iter = epochs * iter_per_epoch
 
     return Trainer(network, verbose, x_train, t_train, x_test, t_test, 
                    epochs, mini_batch_size, evaluate_sample_num_per_epoch, optimizer,

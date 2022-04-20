@@ -25,9 +25,9 @@ dapple_price, dorange_price = backward(add_apple_orange_layer, dall_price)  # (3
 dorange, dorange_num = backward(mul_orange_layer, dorange_price)  # (2)
 dapple, dapple_num = backward(mul_apple_layer, dapple_price)  # (1)
 
-println("price:", Int(round(price)))
+println("price:", round(Int, price)
 println("dApple:", dapple)
-println("dApple_num:", Int(round(dapple_num)))
+println("dApple_num:", round(Int, dapple_num)
 println("dOrange:", dorange)
-println("dOrange_num:", Int(round(dorange_num)))
+println("dOrange_num:", round(Int, dorange_num)
 println("dTax:", dtax)

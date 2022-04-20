@@ -16,7 +16,7 @@ dprice = 1
 dapple_price, dtax = backward(mul_tax_layer, dprice)
 dapple, dapple_num = backward(mul_apple_layer, dapple_price)
 
-println("price:", Int(round(price)))
+println("price:", round(Int, price))
 println("dApple:", dapple)
-println("dApple_num:", Int(round(dapple_num)))
+println("dApple_num:", round(Int, dapple_num))
 println("dTax:", dtax)

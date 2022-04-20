@@ -39,7 +39,7 @@ function SimpleConvNet(input_dim=(1, 28, 28),
     filter_stride = conv_param["stride"]
     input_size = input_dim[2]
     conv_output_size = (input_size - filter_size + 2*filter_pad) / filter_stride + 1
-    pool_output_size = Integer(round(filter_num * (conv_output_size/2) * (conv_output_size/2)))
+    pool_output_size = round(Int, filter_num * (conv_output_size/2) * (conv_output_size/2))
     
     # 重みの初期化
     params = Dict(

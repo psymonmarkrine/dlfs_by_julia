@@ -22,7 +22,7 @@ classified_ids = zeros(Integer, 0)
 acc = 0.0
 batch_size = 1000
 
-for i = 1:Integer(floor(size(x_test, 1) / batch_size))
+for i = 1:floor(Int, size(x_test, 1) / batch_size)
     tx = x_test[(i-1)*batch_size+1:i*batch_size,:,:,:]
     tt = t_test[(i-1)*batch_size+1:i*batch_size]
     y = predict(network, tx, false)

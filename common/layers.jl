@@ -261,8 +261,8 @@ end
 function forward(self::Convolution, x)
     FN, C, FH, FW = size(self.W)
     N, C, H, W = size(x)
-    out_h = 1 + Integer(floor((H + 2*self.pad - FH) / self.stride))
-    out_w = 1 + Integer(floor((W + 2*self.pad - FW) / self.stride))
+    out_h = fld1(H + 2*self.pad - FH, self.stride)
+    out_w = fld1(W + 2*self.pad - FW, self.stride)
 
     col = im2col(x, FH, FW, stride=self.stride, pad=self.pad)
     col_W = reshape(self.W, (FN, :))'
@@ -307,8 +307,8 @@ end
 
 function forward(self::Pooling, x)
     N, C, H, W = size(x)
-    out_h = Integer(floor(1 + (H - self.pool_h) / self.stride))
-    out_w = Integer(floor(1 + (W - self.pool_w) / self.stride))
+    out_h = fld1(H - self.pool_h, self.stride)
+    out_w = fld1(W - self.pool_w, self.stride)
 
     col = im2col(x, self.pool_h, self.pool_w, stride=self.stride, pad=self.pad)
     col = reshape(col, (:, self.pool_h*self.pool_w))

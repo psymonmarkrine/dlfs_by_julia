@@ -17,7 +17,7 @@ t_train = t_train[1:500]
 
 # 検証データの分離
 validation_rate = 0.20
-validation_num = Integer(round(size(x_train, 1) * validation_rate))
+validation_num = round(Int, size(x_train, 1) * validation_rate)
 x_train, t_train = shuffle_dataset(x_train, t_train)
 x_val = x_train[1:validation_num, :]
 t_val = t_train[1:validation_num]
@@ -59,7 +59,7 @@ end
 println("=========== Hyper-Parameter Optimization Result ===========")
 graph_draw_num = 20
 col_num = 5
-row_num = Integer(ceil(graph_draw_num / col_num))
+row_num = ceil(Int, graph_draw_num / col_num)
 i = 0
 
 p = []
